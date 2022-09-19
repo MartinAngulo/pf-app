@@ -34,7 +34,7 @@ export const User_Login_State = createAsyncThunk(
   'user/login',
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("http://localhost:3001/login", user);
+      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
       const resp = response.data
       console.log(response);
 
@@ -65,7 +65,7 @@ export const auth_Login_Google = createAsyncThunk(
 export const authGoogle = createAsyncThunk('user/auth_google', async (code: {code:String}, thunkAPI) => {
     console.log(code);
     try {
-      const response = await axios.post("http://localhost:3001/authGoogle",code );
+      const response = await axios.post("https://api-pf-xi.vercel.app/authGoogle",code );
       return response.data;
     } catch (error) {
       return

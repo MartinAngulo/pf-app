@@ -81,7 +81,7 @@ export async function opiniom(token: string, feedback: object) {
   let bodyContent = JSON.stringify(feedback);
 
   let reqOptions = {
-    url: "http://localhost:3001/auth/userfeedback",
+    url: "https://api-pf-xi.vercel.app/auth/userfeedback",
     method: "PUT",
     headers: headersList,
     data: bodyContent,
