@@ -1,108 +1,317 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { RootState, AppThunk } from '../../app/store';
-
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
+import jwtDecode from "jwt-decode";
+import { exercises } from "../../additional_info/exercises";
+import { RootState, AppThunk } from "../../app/store";
+interface ejerciciosData {
+  _id: string;
+  name: string;
+  difficulty: string;
+  equipment: true;
+  muscles: string;
+  genre: string;
+  video: string;
+  description: string;
+  plan: string;
+}
 export interface State {
-  user: null | string;
-
+  user: null | string |any;
   status: string | null;
+  rutines: any | null;
+  exercises: Array<any> | [];
+  descripcionEjersicio:any;
+}
 
+export interface infoRutina {
+  token: string;
+  form_data: object;
 }
 
 const initialState: State = {
   user: null,
-  status: "none"
+  status: "none",
+  rutines: {},
+  exercises: [],
+  descripcionEjersicio:{}
 };
 
-export const User_Register_State = createAsyncThunk(
-  'user/sing_upUser',
-  async (user: object, thunkAPI) => {
+export const Rutines_Get = createAsyncThunk(
+  "user/rutinesSlice",
+  async (token: string, thunkAPI) => {
+    console.log(token);
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/register", user);
-      const resp = response.data
-      thunkAPI.dispatch(User(resp))
+      let headersList = {
+        Accept: "/",
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+      };
+
+      let reqOptions = {
+        url: "http://https://api-pf-xi.vercel.app/auth/getroutine",
+        method: "GET",
+        headers: headersList,
+      };
+
+      let response = await axios.request(reqOptions);
+      const resp = response.data;
+      console.log(resp);
+
+      thunkAPI.dispatch(Rutines(resp));
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data))
-      thunkAPI.rejectWithValue(error)
-      return
+      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.rejectWithValue(error);
+      return;
+    }
+  }
+);
+
+export const EditUser = createAsyncThunk(
+  "user/Edit",
+  async ({token,data}:any, thunkAPI) => {
+
+    try {
+      let headersList = {
+        Accept: "/",
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+      };
+
+      let reqOptions = {
+        url: `http://https://api-pf-xi.vercel.app/auth/changeinfo`,
+        method: "PUT",
+        headers: headersList,
+        data:data
+      };
+
+      let response = await axios.request(reqOptions);
+      const resp = response.data;
+
+      thunkAPI.dispatch(status(response.data));
+      return resp;
+    } catch (error: any) {
+      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.rejectWithValue(error);
+      return;
+    }
+  }
+);
+
+export const Exercises_Get = createAsyncThunk(
+  "user/exercices",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("http://https://api-pf-xi.vercel.app/exercises");
+      const resp = response.data;
+      thunkAPI.dispatch(Exercises(resp));
+      return resp;
+    } catch (error: any) {
+      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.rejectWithValue(error);
+      return;
+    }
+  }
+);
+
+export const User_Register_State = createAsyncThunk(
+  "user/sing_upUser",
+  async (user: object, thunkAPI) => {
+    try {
+      const response = await axios.post("http://https://api-pf-xi.vercel.app/register", user);
+      const resp = response.data;
+      thunkAPI.dispatch(User(resp));
+      return resp;
+    } catch (error: any) {
+      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.rejectWithValue(error);
+      return;
     }
   }
 );
 
 export const User_Login_State = createAsyncThunk(
-  'user/login',
+  "user/login",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
-      const resp = response.data
+      const response = await axios.post("http://https://api-pf-xi.vercel.app/login", user);
+      const resp = response.data;
       console.log(response);
 
-      thunkAPI.dispatch(User(resp))
+      thunkAPI.dispatch(User(resp));
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data))
-      thunkAPI.rejectWithValue(error.response.data)
-
-      return
+      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.rejectWithValue(error.response.data);
+      return;
     }
   }
 );
+
+export const removeAccount = createAsyncThunk(
+  "user/remove",
+  async (tokenUser: string, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + tokenUser,
+        "Content-Type": "application/json",
+      };
+
+      let userData = jwtDecode(tokenUser);
+
+      let reqOptions = {
+        url: "http://https://api-pf-xi.vercel.app/auth/delete",
+        method: "delete",
+        headers: headersList,
+        data: userData,
+      };
+
+      let response = await axios.request(reqOptions);
+      console.log(response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+
+      return error;
+    }
+  }
+);
+
+export const getProfileInfo = createAsyncThunk(
+  "user/getProfileInfo",
+  async (tokenUser: string, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + tokenUser,
+        "Content-Type": "application/json",
+      };
+      console.log(tokenUser);
+      let userData = jwtDecode(tokenUser);
+
+      let reqOptions = {
+        url: "http://https://api-pf-xi.vercel.app/auth/profile",
+        method: "GET",
+        headers: headersList,
+        data: userData,
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.dispatch(User(response.data));
+      console.log(response.data);
+
+      return;
+    } catch (error: any) {
+      console.log(error);
+      return error;
+    }
+  }
+);
+
+export const infoUserRutina = createAsyncThunk(
+  "user/DataRutinas",
+  async (data: infoRutina, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + data.token,
+        "Content-Type": "application/json",
+      };
+
+      let reqOptions = {
+        url: "http://https://api-pf-xi.vercel.app/auth/userinfo",
+        method: "PUT",
+        headers: headersList,
+        data: data.form_data,
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.dispatch(status("success"));
+      return;
+    } catch (error: any) {
+      thunkAPI.dispatch(status(error.response.data));
+      console.log(error);
+      return error;
+    }
+  }
+);
+
+
 export const auth_Login_Google = createAsyncThunk(
-  'user/auth_google',
+  "user/auth_google",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("https://api-pf-xi.vercel.app/login/google");
-      const resp = response.data
-      thunkAPI.dispatch(User(resp))
+      const response = await axios.get("http://https://api-pf-xi.vercel.app/login/google");
+      const resp = response.data;
+      thunkAPI.dispatch(User(resp));
       return resp;
     } catch (error) {
-      return
+      return;
     }
   }
 );
 
-export const authGoogle = createAsyncThunk('user/auth_google', async (code: {code:String}, thunkAPI) => {
+export const authGoogle = createAsyncThunk(
+  "user/auth_google",
+  async (code: { code: String }, thunkAPI) => {
     console.log(code);
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/authGoogle",code );
+      const response = await axios.post(
+        "http://https://api-pf-xi.vercel.app/authGoogle",
+        code
+      );
       return response.data;
     } catch (error) {
-      return
+      return;
     }
   }
 );
 
 export const StateSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
 
   reducers: {
+    Rutines: (state, action: PayloadAction<[]>) => {
+      state.status = "none";
+      state.rutines = action.payload;
+    },
+
+    Exercises: (state, action: PayloadAction<[]>) => {
+      state.status = "none";
+      state.exercises = action.payload;
+    },
+
     User: (state, action: PayloadAction<string>) => {
-      state.status = "none"
-      state.user = action.payload
+      state.status = "none";
+      state.user = action.payload;
     },
     sigendOut: (state, action: PayloadAction<null>) => {
-      state.status = "none"
+      console.log(action.payload);
+      state.status = "none";
 
       window.localStorage.removeItem("Login_userFit_Focus");
 
-      state.user = action.payload
+      state.user = action.payload;
     },
     status: (state, action: PayloadAction<string>) => {
-      console.log(action.payload)
-      state.status = action.payload
-    }
+      console.log(action.payload);
+      state.status = action.payload;
+    },
+    EjerciciosDecription:  (state, action: PayloadAction<string| undefined>) => {
+      state.descripcionEjersicio  =  state.exercises.find(e => e._id===action.payload)
+       
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(User_Register_State.pending, (state) => {
-        state.status = null
+        state.status = null;
       })
 
       .addCase(User_Login_State.pending, (state, action) => {
-        console.log("pending", action)
-        state.status = null
+        console.log("pending", action);
+        state.status = null;
       })
 
       .addCase(authGoogle.pending, (state, action) => {
@@ -110,17 +319,15 @@ export const StateSlice = createSlice({
       })
       .addCase(authGoogle.fulfilled, (state, action) => {
         console.log("fulfilled", action.payload);
-        state.status= "load";
+        state.status = "load";
         state.user = action.payload;
-      })
+      });
   },
-
 });
 
-export const { User, sigendOut, status } = StateSlice.actions;
-
+export const { User, sigendOut,EjerciciosDecription, status, Rutines, Exercises } =
+  StateSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 
 export default StateSlice.reducer;
-

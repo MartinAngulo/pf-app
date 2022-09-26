@@ -1,33 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // Icons
-import icon from "../assets/icons/nav-icon.png";
+import icon from "../assets/icons/nav-icon2.png";
 import defaultPhoto from "../assets/icons/monkey.jpg";
 import spanish from "../../Components/assets/icons/spanish.png";
 import english from "../../Components/assets/icons/english.png";
 
 import { Link as Scroll } from "react-scroll";
-import { useAppDispatch, useSesion } from "../../app/hooks";
+import { useAppDispatch, useAppSelector, useSesion } from "../../app/hooks";
 import "./styles/Navbar.css";
-import { sigendOut } from "../../features/counter/counterSlice";
+import { sigendOut, selectUser } from "../../features/counter/counterSlice";
 import Swal from "sweetalert2";
 
 const Navbar = () => {
   const [dropdown, setDropdown] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [lenguage, setLenguage] = useState(false);
-  const [user, setUser] = useState(false);
+  const [userData, setUser] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>();
 
   const dispatch = useAppDispatch();
-  const userData = useSesion();
-  console.log(userData);
+  const {user} = useAppSelector( selectUser )
 
+  const userSeccion = useSesion()
+ const Navegation=  useNavigate()  
+
+ 
+ const onClick = ()=>{
+  window.scrollTo(0,0);
+  Navegation(userData?'/fitFocus':'/home')
+ }
+
+
+
+ 
   useEffect(() => {
-    if (userData) {
-      console.log(userData);
+    if (user) {
+      setUserInfo(user)
+      setUser(true);
+        
+    }else if(userSeccion){
+      setUserInfo(userSeccion)
       setUser(true);
     }
-  }, [userData]);
+    console.log(user,userSeccion)
+  }, [user,userSeccion]);
 
   function signOut(): void {
     Swal.fire({
@@ -43,14 +60,16 @@ const Navbar = () => {
         dispatch(sigendOut(null));
         setUser(false);
         setDropdown(false);
+        Navegation("/home")
         window.location.reload();
       }
     });
   }
 
   return (
-    <div>
-      <nav className=" border-gray-200 px-2 sm:px-4 py-2.5 bg-gray-900 border-b-4">
+
+    <div style={{backgroundColor:"white"}}>
+      <nav className=" border-gray-200 px-2 sm:px-4  bg-white  w-full border-b-4">
         <div className="container-fluid w-full flex flex-wrap items-center justify-between px-8 p-4">
           <div className="flex items-center">
             <img
@@ -65,7 +84,7 @@ const Navbar = () => {
               onClick={() => setShowMenu(!showMenu)}
               data-collapse-toggle="mobile-menu-2"
               type="button"
-              className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg md:hidden"
               aria-controls="mobile-menu-2"
               aria-expanded="false"
             >
@@ -89,60 +108,83 @@ const Navbar = () => {
               className="text-center justify-between items-center w-full md:flex md:w-auto md:order-1"
               id="mobile-menu-2"
             >
-              <ul className="flex flex-col p-4 mt-4 ml-4 rounded-lg  md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0  md:bg-gray-900 border-gra0">
+              <ul className="flex flex-col p-4 mt-4 ml-4 rounded-lg  md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0">
                 <li>
-                  <Link
-                    to="/home"
-                    className="block py-2 pr-4 pl-3 text-gray-400 hover:text-white rounded md:bg-transparent md:p-0 "
+                  {/* <Link
+                    to={userData?`/fitFocus`:`/home`}
+                    className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black rounded md:bg-transparent md:p-0 "
                     aria-current="page"
                   >
                     Inicio
-                  </Link>
+                  </Link> */}
+                  <button onClick={onClick} className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black rounded md:bg-transparent md:p-0 "
+                    aria-current="page">Inicio</button>
                 </li>
-                <li>
-                  {!user ? (
-                    <Scroll
+              
+                    <li>
+                      <Scroll
+                      to="feedbacks"
                       spy={true}
                       smooth={true}
                       offset={-100}
                       duration={500}
-                      to="about"
-                      className="block py-2 pr-4 pl-3 text-gray-400 hover:text-white  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                      className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black rounded md:bg-transparent  md:p-0 cursor-pointer"
+                    >
+                      Opiniones
+                    </Scroll>
+                    </li>
+            
+                      <li>
+                        <Link
+                           to={userData?`/ejercicios`:`/auth/sing-up`}
+                          className="block py-2 p pr-4 pl-3 text-gray-400 hover:text-black  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                        >
+                          Ejercicios
+                        </Link>
+                      </li>
+                      
+                      <li>
+                        <Link
+                           to={userData?`/calculadora`:`/auth/sing-up`}
+                          className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                        >
+                          Calculadora
+                        </Link>
+                      </li>
+                      
+                      <li>
+                        <Link
+                            to={userData?`/noticias`:`/auth/sing-up`}
+                          className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                        >
+                          Noticias
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link
+                            to={userData?`/rutinas`:`/auth/sing-up`}
+                          className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                        >
+                          Rutinas personalizadas
+                        </Link>
+                      </li>
+                  {!userData&&
+                      <li>
+                      <Scroll
+                      to="Nosotros"
+                      spy={true}
+                      smooth={true}
+                      offset={-100}
+                      duration={500}
+                      className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black rounded md:bg-transparent  md:p-0 cursor-pointer"
                     >
                       Nosotros
                     </Scroll>
-                  ) : (
-                    <li>
-                      <Scroll
-                        to="excercises"
-                        spy={true}
-                        smooth={true}
-                        offset={-100}
-                        duration={500}
-                        className="block py-2 pr-4 pl-3 text-gray-400 hover:text-white  rounded md:bg-transparent  md:p-0 cursor-pointer"
-                      >
-                        Ejercicios
-                      </Scroll>
-                    </li>
-                  )}
-                </li>
-
-                <li>
-                  <Scroll
-                    to="feedbacks"
-                    spy={true}
-                    smooth={true}
-                    offset={-100}
-                    duration={500}
-                    className="block py-2 pr-4 pl-3 text-gray-400 hover:text-white  rounded md:bg-transparent  md:p-0 cursor-pointer"
-                  >
-                    Opiniones
-                  </Scroll>
-                </li>
+                    </li>}
               </ul>
             </div>
           </div>
-
           <div className="flex items-center md:order-2 ">
             <div>
               <li className="flex items-center md:order-2">
@@ -150,7 +192,7 @@ const Navbar = () => {
                   onClick={() => setLenguage(!lenguage)}
                   type="button"
                   data-dropdown-toggle="language-dropdown-menu"
-                  className="inline-flex justify-center items-center p-2 text-sm text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+                  className="inline-flex justify-center items-center p-2 text-sm text-gray-500 rounded cursor-pointer hover:text-gray-900"
                 >
                   <img
                     src={spanish}
@@ -161,14 +203,14 @@ const Navbar = () => {
                 </button>
                 {lenguage && (
                   <div
-                    className=" z-50 my-4 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
+                    className=" z-50 text-base list-none bg-white rounded divide-y divide-gray-100 shadow "
                     id="language-dropdown-menu"
                   >
                     <ul className="py-1" role="none">
                       <li>
                         <a
                           href="/"
-                          className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                          className="block hover: px-4 text-sm text-gray-500 "
                           role="menuitem"
                         >
                           <div className="inline-flex items-center">
@@ -190,28 +232,28 @@ const Navbar = () => {
               data-dropdown-toggle="user-dropdown"
               data-dropdown-placement="bottom"
             >
-              {user ? (
+              {userData ? (
                 <div>
                   <span className="sr-only">Open user menu</span>
                   <img
                     className="w-10 h-10 rounded-full ml-4"
-                    src={defaultPhoto}
+                    src={userInfo?.avatar}
                     onClick={() => setDropdown(!dropdown)}
-                    alt="userphoto"
+                    alt=""
                   />
                 </div>
               ) : (
                 <div className="flex flex-col p-4 mt-4 rounded-lg border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 ">
                   <Link
                     to="/auth/sing-up"
-                    className="block py-2 pr-4 pl-3  md:hover:bg-transparent  md:p-0 text-gray-400 md:hover:text-white "
+                    className="block py-2 pr-4 pl-3  md:hover:bg-transparent  md:p-0 text-gray-400 md:hover:text-black"
                   >
                     Registrarse
                   </Link>
 
                   <Link
                     to="/auth/login"
-                    className="block py-2 pr-4 pl-3 md:hover:bg-transparent  md:p-0 text-gray-400 md:hover:text-white  hover:text-white "
+                    className="block py-2 pr-4 pl-3 md:hover:bg-transparent  md:p-0 text-gray-400 md:hover:text-black"
                   >
                     Iniciar sesión
                   </Link>
@@ -222,7 +264,7 @@ const Navbar = () => {
             {/* Menu de Usuario Registrado */}
             {dropdown && (
               <div
-                className=" z-50 my-4 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
+                className=" z-50 my-4 text-base list-none bg-white rounded divide-y divide-gray-100 shadow"
                 id="user-dropdown"
                 data-popper-reference-hidden
                 data-popper-escaped
@@ -234,19 +276,19 @@ const Navbar = () => {
                   transform: "translate(-50px, 20px)",
                 }}
               >
-                <div className="py-3 px-4">
-                  <span className="block text-sm text-gray-900 dark:text-white">
-                    {userData.name}
+           <div className="py-3 px-4">
+                  <span className="block text-sm text-gray-900 ">
+                    {userInfo?.name}
                   </span>
-                  <span className="block text-sm font-medium text-gray-500 truncate dark:text-gray-400">
-                    {userData.email}
+                  <span className="block text-sm font-medium text-gray-500 truncate ">
+                    {userInfo?.email}
                   </span>
                 </div>
                 <ul className="py-1" aria-labelledby="user-menu-button">
                   <li>
                     <Link
                       to="/profile"
-                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 "
                     >
                       Mi Perfil
                     </Link>
@@ -254,7 +296,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/settings"
-                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 "
                     >
                       Configuraciones
                     </Link>
@@ -262,7 +304,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/dashboard"
-                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 "
                     >
                       Dashboard
                     </Link>
@@ -272,11 +314,11 @@ const Navbar = () => {
                       signOut();
                     }}
                   >
-                    <div className="block py-2 px-4 cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                    <div className="block py-2 px-4 cursor-pointer text-sm text-gray-700 hover:bg-gray-100  ">
                       Cerrar Sesión
                     </div>
                   </li>
-                </ul>
+                  </ul>
               </div>
             )}
           </div>
