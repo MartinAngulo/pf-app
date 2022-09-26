@@ -80,7 +80,7 @@ export default function DecriptionEjer() {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-             const res= await axios.put("http://https://api-pf-xi.vercel.app/auth/addfav",descripcionEjersicio,{
+             const res= await axios.put("https://api-pf-xi.vercel.app/auth/addfav",descripcionEjersicio,{
               headers: { Authorization: "Bearer " + token},
             })
           if(res.data){

@@ -47,7 +47,7 @@ export const Rutines_Get = createAsyncThunk(
       };
 
       let reqOptions = {
-        url: "http://https://api-pf-xi.vercel.app/auth/getroutine",
+        url: "https://api-pf-xi.vercel.app/auth/getroutine",
         method: "GET",
         headers: headersList,
       };
@@ -78,7 +78,7 @@ export const EditUser = createAsyncThunk(
       };
 
       let reqOptions = {
-        url: `http://https://api-pf-xi.vercel.app/auth/changeinfo`,
+        url: `https://api-pf-xi.vercel.app/auth/changeinfo`,
         method: "PUT",
         headers: headersList,
         data:data
@@ -101,7 +101,7 @@ export const Exercises_Get = createAsyncThunk(
   "user/exercices",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("http://https://api-pf-xi.vercel.app/exercises");
+      const response = await axios.get("https://api-pf-xi.vercel.app/exercises");
       const resp = response.data;
       thunkAPI.dispatch(Exercises(resp));
       return resp;
@@ -117,7 +117,7 @@ export const User_Register_State = createAsyncThunk(
   "user/sing_upUser",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("http://https://api-pf-xi.vercel.app/register", user);
+      const response = await axios.post("https://api-pf-xi.vercel.app/register", user);
       const resp = response.data;
       thunkAPI.dispatch(User(resp));
       return resp;
@@ -133,7 +133,7 @@ export const User_Login_State = createAsyncThunk(
   "user/login",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("http://https://api-pf-xi.vercel.app/login", user);
+      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
       const resp = response.data;
       console.log(response);
 
@@ -160,7 +160,7 @@ export const removeAccount = createAsyncThunk(
       let userData = jwtDecode(tokenUser);
 
       let reqOptions = {
-        url: "http://https://api-pf-xi.vercel.app/auth/delete",
+        url: "https://api-pf-xi.vercel.app/auth/delete",
         method: "delete",
         headers: headersList,
         data: userData,
@@ -190,7 +190,7 @@ export const getProfileInfo = createAsyncThunk(
       let userData = jwtDecode(tokenUser);
 
       let reqOptions = {
-        url: "http://https://api-pf-xi.vercel.app/auth/profile",
+        url: "https://api-pf-xi.vercel.app/auth/profile",
         method: "GET",
         headers: headersList,
         data: userData,
@@ -219,7 +219,7 @@ export const infoUserRutina = createAsyncThunk(
       };
 
       let reqOptions = {
-        url: "http://https://api-pf-xi.vercel.app/auth/userinfo",
+        url: "https://api-pf-xi.vercel.app/auth/userinfo",
         method: "PUT",
         headers: headersList,
         data: data.form_data,
@@ -241,7 +241,7 @@ export const auth_Login_Google = createAsyncThunk(
   "user/auth_google",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("http://https://api-pf-xi.vercel.app/login/google");
+      const response = await axios.get("https://api-pf-xi.vercel.app/login/google");
       const resp = response.data;
       thunkAPI.dispatch(User(resp));
       return resp;
@@ -257,7 +257,7 @@ export const authGoogle = createAsyncThunk(
     console.log(code);
     try {
       const response = await axios.post(
-        "http://https://api-pf-xi.vercel.app/authGoogle",
+        "https://api-pf-xi.vercel.app/authGoogle",
         code
       );
       return response.data;

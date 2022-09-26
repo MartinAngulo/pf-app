@@ -3,7 +3,7 @@ import axios from "axios";
 
 /* export const getExercises = createAsyncThunk("homeRegister/getExercises", async (thunkAPI) => {
     try {
-        return await axios.get("http://https://api-pf-xi.vercel.app/exercises")
+        return await axios.get("https://api-pf-xi.vercel.app/exercises")
     } catch (error) {
         return thunkAPI.rejectWithValue(error)
     }

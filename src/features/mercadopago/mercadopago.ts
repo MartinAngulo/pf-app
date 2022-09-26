@@ -23,7 +23,7 @@ interface pay {
 
 
 export const get_payment = createAsyncThunk('user/get_payment', async (data: (pay), thunkAPI) => {
-        const response = await axios.get("http://https://api-pf-xi.vercel.app/auth/payment", {
+        const response = await axios.get("https://api-pf-xi.vercel.app/auth/payment", {
             headers: {
                 Authorization: `Bearer ${data.token}`,
             }
@@ -33,7 +33,7 @@ export const get_payment = createAsyncThunk('user/get_payment', async (data: (pa
 );
 export const verify_payment = createAsyncThunk('user/verify_payment', async (data: (pay), thunkAPI) => {
 
-    const response = await axios.get(`http://https://api-pf-xi.vercel.app/auth/confirmation?payment_id=${data.id}`, {
+    const response = await axios.get(`https://api-pf-xi.vercel.app/auth/confirmation?payment_id=${data.id}`, {
         headers: {
             Authorization: `Bearer ${data.token}`,
         }
