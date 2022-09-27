@@ -17,9 +17,11 @@ interface ejerciciosData {
 export interface State {
   user: null | string |any;
   status: string | null;
+  statusToken: string | null;
   rutines: any | null;
   exercises: Array<any> | [];
-  descripcionEjersicio:any;
+ 
+
 }
 
 export interface infoRutina {
@@ -29,10 +31,12 @@ export interface infoRutina {
 
 const initialState: State = {
   user: null,
+  statusToken: "none",
   status: "none",
   rutines: {},
   exercises: [],
-  descripcionEjersicio:{}
+
+ 
 };
 
 export const Rutines_Get = createAsyncThunk(
@@ -198,12 +202,44 @@ export const getProfileInfo = createAsyncThunk(
 
       let response = await axios.request(reqOptions);
       thunkAPI.dispatch(User(response.data));
-      console.log(response.data);
+      console.log(response);
 
       return;
     } catch (error: any) {
       console.log(error);
       return error;
+    }
+  }
+);
+
+
+
+export const ValidToken = createAsyncThunk(
+  "user/validToken",
+  async (tokenUser: string, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + tokenUser,
+        "Content-Type": "application/json",
+      };
+     
+
+      let reqOptions = {
+        url: "https://api-pf-xi.vercel.app/auth/ValidToken",
+        method: "GET",
+        headers: headersList,
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.dispatch(statusToken("token valido"));
+      return;
+    } catch (error: any) {
+      if(error.response.data.message!=="jwt must be provided"){
+
+        thunkAPI.dispatch(statusToken("token invalido"));
+      }
+      
     }
   }
 );
@@ -282,6 +318,7 @@ export const StateSlice = createSlice({
       state.exercises = action.payload;
     },
 
+
     User: (state, action: PayloadAction<string>) => {
       state.status = "none";
       state.user = action.payload;
@@ -298,9 +335,9 @@ export const StateSlice = createSlice({
       console.log(action.payload);
       state.status = action.payload;
     },
-    EjerciciosDecription:  (state, action: PayloadAction<string| undefined>) => {
-      state.descripcionEjersicio  =  state.exercises.find(e => e._id===action.payload)
-       
+    statusToken: (state, action: PayloadAction<string>) => {
+      console.log(action.payload);
+      state.statusToken = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -325,7 +362,7 @@ export const StateSlice = createSlice({
   },
 });
 
-export const { User, sigendOut,EjerciciosDecription, status, Rutines, Exercises } =
+export const { User, sigendOut, status, Rutines, Exercises,statusToken } =
   StateSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;

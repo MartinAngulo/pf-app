@@ -20,7 +20,7 @@ const Navbar = () => {
   const [userInfo, setUserInfo] = useState<any>();
 
   const dispatch = useAppDispatch();
-  const {user} = useAppSelector( selectUser )
+  const {user, statusToken} = useAppSelector( selectUser )
 
   const userSeccion = useSesion()
  const Navegation=  useNavigate()  
@@ -31,20 +31,25 @@ const Navbar = () => {
   Navegation(userData?'/fitFocus':'/home')
  }
 
-
-
  
   useEffect(() => {
-    if (user) {
-      setUserInfo(user)
-      setUser(true);
-        
-    }else if(userSeccion){
-      setUserInfo(userSeccion)
-      setUser(true);
+    console.log(userSeccion)
+
+    if(
+      statusToken!=="token invalido"
+    ){
+      if (typeof user === "object" && user!==null ) {
+        setUserInfo(user)
+        setUser(true);
+      }else if(userSeccion){
+        console.log(userSeccion)
+        setUserInfo(userSeccion)
+        setUser(true);
+      }
+    }else{
+      setUser(false);
     }
-    console.log(user,userSeccion)
-  }, [user,userSeccion]);
+  }, [user,userSeccion, statusToken]);
 
   function signOut(): void {
     Swal.fire({
@@ -77,9 +82,7 @@ const Navbar = () => {
               className="mr-3 h-6 sm:h-9 cursor-default"
               alt="FF Logo"
             />
-            {/* <span className="self-center text-xl font-semibold whitespace-nowrap text-white cursor-default">
-              Fit-Focus
-            </span> */}
+      
             <button
               onClick={() => setShowMenu(!showMenu)}
               data-collapse-toggle="mobile-menu-2"
@@ -161,6 +164,14 @@ const Navbar = () => {
                         </Link>
                       </li>
 
+                      <li>
+                        <Link
+                            to={userData?`/Favoritos`:`/auth/sing-up`}
+                          className="block py-2 pr-4 pl-3 text-gray-400 hover:text-black  rounded md:bg-transparent  md:p-0 cursor-pointer"
+                        >
+                          Favoritos
+                        </Link>
+                      </li>
                       <li>
                         <Link
                             to={userData?`/rutinas`:`/auth/sing-up`}

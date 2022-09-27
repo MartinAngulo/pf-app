@@ -111,8 +111,8 @@ const HomeRegister = () => {
         {/* cartas de ejercicios */}
         <div className="flex mt-[5%] flex-col bg-gray-200 ">
           <div className="flex items-end w-full h-24">
-            <h1 className="ml-0 text-5xl font-dark w-[80%] mx-[20px] ml-12">
-              Ejercicios de la semana
+            <h1 className="ml-9 text-5xl font-dark w-[80%] mx-[20px]">
+              Ejercicios de la semana:
             </h1>
 
             <Link
@@ -133,8 +133,8 @@ const HomeRegister = () => {
 
           <div className="bg-[#59656F]">
             <div className="flex items-end w-full h-24">
-              <h1 className="ml-0 text-5xl text-white font-dark w-[80%] mx-[20px] ml-12">
-                Ejercicios con mejor calificación
+              <h1 className="ml-9 text-5xl text-white font-dark w-[80%] mx-[20px] ">
+                Ejercicios con mejor calificación:
               </h1>
               <Link
                 to="/ejercicios"
@@ -153,7 +153,7 @@ const HomeRegister = () => {
         </div>
 
         <div className="flex items-end w-full h-24">
-          <h1 className="ml-0 text-5xl font-dark w-[80%] mx-[20px] ml-12">
+          <h1 className="ml-0 text-5xl font-dark w-[80%] mx-[20px] ">
             Noticias de interés:
           </h1>
           <Link
