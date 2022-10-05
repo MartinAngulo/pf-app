@@ -16,6 +16,14 @@ const Footer = () => {
     comment: "",
     email: "",
   });
+
+  const [error, setError] = useState({
+    name: "",
+    email: "",
+    password: "",
+  })
+
+
   function handleChange(
     event: React.ChangeEvent<
       HTMLFormElement | HTMLInputElement | HTMLTextAreaElement
@@ -30,6 +38,36 @@ const Footer = () => {
 
   const handleSubmmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+
+    if (feedback.comment.length < 10) {
+      Swal.fire({
+        title: "Su comentario debe tener mas de 10 caracteres", 
+        icon: "info",
+        showCancelButton: false,
+        confirmButtonColor: "#230bf8",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Aceptar",
+      }).then((result) => {
+        setError({ ...error, password: "border-red-600" })
+      });
+      return;
+    }
+
+    if (feedback.comment.length > 50) {
+      Swal.fire({
+        title: "Su comentario debe tener menos de 50 caracteres", 
+        icon: "info",
+        showCancelButton: false,
+        confirmButtonColor: "#230bf8",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Aceptar",
+      }).then((result) => {
+        setError({ ...error, password: "border-red-600" })
+      });
+      return;
+    }
+
 
     if (feedback.comment.length > 0 && feedback.email.length > 0) {
       Swal.fire({
@@ -48,6 +86,9 @@ const Footer = () => {
       });
     }
   };
+
+
+
   return (
     <footer className="p-4 sm:p-6 bg-gray-900">
       <div className="md:flex md:justify-between h-80"> 
@@ -66,7 +107,7 @@ const Footer = () => {
               <input
                 type="email"
                 name="email"
-                placeholder="Email..."
+                placeholder="Correo..."
                 id="Nombre"
                 required
                 className="p-2 bg-white w-full mt-4 rounded-lg"
@@ -105,7 +146,7 @@ const Footer = () => {
             
             <li className="mb-4">
                 <a
-                  href="https://www.soyhenry.com/"
+                  href="/AboutUs"
                   target="_blank"
                   className="hover:underline"
                 >
@@ -131,13 +172,20 @@ const Footer = () => {
             </h2>
             <ul className="text-gray-400">
               <li className="mb-4">
-                <a href="#" className="hover:underline ">
+
+                <a href="https://github.com/Final-Project-Henry/Fit-Focus" className="hover:underline " target="_blank">
+
                   Github
                 </a>
               </li>
               <li className="mb-4">
-                <a href="#" target="_blank" className="hover:underline ">
-                  instagram
+                <a href="https://www.instagram.com/fitfocushenry/" target="_blank" className="hover:underline ">
+                  Instagram
+                </a>
+              </li>
+              <li className="mb-4">
+                <a href="/contactanos" target="_blank" className="hover:underline ">
+                  Contactos
                 </a>
               </li>
             </ul>
@@ -148,12 +196,12 @@ const Footer = () => {
             </h2>
             <ul className="text-gray-400">
               <li className="mb-4">
-                <a href="#" target="_blank" className="hover:underline">
+                <a href="/politicadeprivacidad" target="_blank" className="hover:underline">
                   Política de Privacidad
                 </a>
               </li>
               <li>
-                <a href="#" target="_blank" className="hover:underline">
+                <a href="/terminosycondiciones" target="_blank" className="hover:underline">
                   Términos y Condiciones
                 </a>
               </li>
@@ -164,17 +212,15 @@ const Footer = () => {
       <hr className="my-6 sm:mx-auto border-amber-500 lg:my-8" />
       <div className="sm:flex sm:items-center sm:justify-between">
         <span className="text-sm  sm:text-center text-gray-400">
-          © 2022 <span className="hover:underline">Fit-Focus™</span>.Reservados
-          todos los derechos.
+          © 2022 <span className="hover:underline">Fit-Focus™</span>.Todos los derechos reservados.
         </span>
         <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
           <a
-            href="#"
+            href="https://web.facebook.com/profile.php?id=100086259135598"
             target="_blank"
             className="text-gray-500 hover:text-white"
           >
             <svg
-              className="w-5 h-5"
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -188,7 +234,7 @@ const Footer = () => {
             <span className="sr-only">Facebook page</span>
           </a>
           <a
-            href="#"
+            href="https://www.instagram.com/fitfocushenry/"
             target="_blank"
             className="text-gray-500 hover:text-white"
           >
@@ -207,7 +253,7 @@ const Footer = () => {
             <span className="sr-only">Instagram page</span>
           </a>
           <a
-            href="#"
+            href="https://twitter.com/"
             target="_blank"
             className="text-gray-500 hover:text-white"
           >
@@ -222,7 +268,7 @@ const Footer = () => {
             <span className="sr-only">Twitter page</span>
           </a>
           <a
-            href="#"
+            href="https://github.com/Final-Project-Henry/Fit-Focus"
             target="_blank"
             className="text-gray-500 hover:text-white"
           >

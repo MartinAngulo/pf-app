@@ -34,7 +34,9 @@ import CardNews from "./News/CardNews";
 import funcion from "../../additional_info/functions";
 import { exitCode } from "process";
 import RandomCards from "./RandomCards";
-import baner from '../assets/homeRegister-media/ejerc.jpg';
+import baner from "../assets/homeRegister-media/ejerc.jpg";
+import LoadingCards from "../loading/LoadingCards";
+import Footer2 from "../footer/Footer2";
 
 interface card {
   _id: string;
@@ -48,17 +50,14 @@ interface card {
   premium: string;
 }
 
-
 const HomeRegister = () => {
-
   let token = useToken();
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const State = useAppSelector(selectUser);
 
-
-  const [exercises, setExercises] = useState<Array<card>>([])
-
+  const [exercises, setExercises] = useState<Array<card>>([]);
+  const [Bastexercises, setBastExercises] = useState<Array<any>>([]);
 
   const [Render, SetRender] = useState({
     rejercisio: true,
@@ -70,9 +69,10 @@ const HomeRegister = () => {
 
   useEffect(() => {
     if (State.exercises.length > 0) {
-      setExercises(funcion.get_exercises(State.exercises))
+      setExercises(funcion.get_exercises(State.exercises));
+      setBastExercises(funcion.MejorRewind(State.exercises))
     }
-  }, [State.exercises])
+  }, [State.exercises]);
 
   useMemo(() => {
     dispatch(Exercises_Get());
@@ -93,15 +93,10 @@ const HomeRegister = () => {
 
   return (
     <>
-
       <div className="bg-slate-100">
         <div className=" w-full ">
           <Link to="/mercadopago">
-            <img
-              src={baner}
-              alt=""
-              className="object-cover h-[450px] w-full"
-            />
+            <img src={baner} alt="" className="object-cover h-[450px] w-full" />
             <h1 className="h-[50px] w-full bg-[#111827] flex items-center text-white font-medium justify-center text-2xl">
               Hazte premium para obtener rutinas personalizadas
             </h1>
@@ -124,11 +119,24 @@ const HomeRegister = () => {
           </div>
 
           <div className="grid grid-cols-4 grid-row-1  content-center my-[60px] bg-gray-200 mt-[30px]">
-            {
-
-              exercises?.map(({ _id, video, name, difficulty, muscles, genre, premium }) => <RandomCards _id={_id} video={video} name={name} difficulty={difficulty} genre={genre} muscles={muscles} premium={premium} equipment={true} />)
-
-            }
+            {exercises.length > 0 ? (
+              exercises.map(
+                ({ _id, video, name, difficulty, muscles, genre, premium }) => (
+                  <RandomCards
+                    _id={_id}
+                    video={video}
+                    name={name}
+                    difficulty={difficulty}
+                    genre={genre}
+                    muscles={muscles}
+                    premium={premium}
+                    equipment={true}
+                  />
+                )
+              )
+            ) : (
+              <LoadingCards num={"1234"} />
+            )}
           </div>
 
           <div className="bg-[#59656F]">
@@ -145,9 +153,34 @@ const HomeRegister = () => {
             </div>
 
             <div className="grid grid-cols-4 grid-row-1 my-[60px] bg-[#59656F] mt-[30px]">
-              {
-                exercises?.map(({ _id, video, name, difficulty, muscles, genre, premium }) => <RandomCards _id={_id} video={video} name={name} difficulty={difficulty} genre={genre} muscles={muscles} premium={premium} equipment={true} />)
-              }
+              {Bastexercises.length > 0 ? (
+                Bastexercises?.map(
+                  ({
+                    _id,
+                    video,
+                    name,
+                    difficulty,
+                    muscles,
+                    genre,
+                    premium,
+                    rating
+                  }) => (
+                    <RandomCards
+                      _id={_id}
+                      video={video}
+                      name={name}
+                      difficulty={difficulty}
+                      genre={genre}
+                      rating={rating}
+                      muscles={muscles}
+                      premium={premium}
+                      equipment={true}
+                    />
+                  )
+                )
+              ) : (
+                <LoadingCards num={"1234"} />
+              )}
             </div>
           </div>
         </div>
@@ -190,7 +223,7 @@ const HomeRegister = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer2 />
     </>
   );
 };

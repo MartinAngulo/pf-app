@@ -3,25 +3,17 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { exercises } from "../../additional_info/exercises";
 import { RootState, AppThunk } from "../../app/store";
-interface ejerciciosData {
-  _id: string;
-  name: string;
-  difficulty: string;
-  equipment: true;
-  muscles: string;
-  genre: string;
-  video: string;
-  description: string;
-  plan: string;
-}
-export interface State {
-  user: null | string |any;
-  status: string | null;
-  statusToken: string | null;
-  rutines: any | null;
-  exercises: Array<any> | [];
- 
 
+export interface State {
+  user: null | string | any;
+  userToken: null | string | any;
+  status: string | undefined;
+  response: string | undefined;
+  detailEjec?: object;
+  rutines: any | null;
+  error: string;
+  EstadoCuenta: string | null;
+  exercises: Array<any> | [];
 }
 
 export interface infoRutina {
@@ -31,18 +23,24 @@ export interface infoRutina {
 
 const initialState: State = {
   user: null,
-  statusToken: "none",
-  status: "none",
+  response: "",
+  error: "",
+  EstadoCuenta: "",
+  userToken: null,
+  status: "default",
   rutines: {},
   exercises: [],
-
- 
 };
+
+export interface userFeedback {
+  email: string;
+  comment: string;
+  token: string;
+}
 
 export const Rutines_Get = createAsyncThunk(
   "user/rutinesSlice",
-  async (token: string, thunkAPI) => {
-    console.log(token);
+  async ({ token, cualqu }: any, thunkAPI) => {
     try {
       let headersList = {
         Accept: "/",
@@ -51,19 +49,20 @@ export const Rutines_Get = createAsyncThunk(
       };
 
       let reqOptions = {
-        url: "https://api-pf-xi.vercel.app/auth/getroutine",
+        url: cualqu
+          ? `https://api-pf-xi.vercel.app/auth/getroutine?get=${cualqu}`
+          : "https://api-pf-xi.vercel.app/auth/getroutine",
         method: "GET",
         headers: headersList,
       };
 
       let response = await axios.request(reqOptions);
       const resp = response.data;
-      console.log(resp);
 
       thunkAPI.dispatch(Rutines(resp));
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.dispatch(Status(error.response.data));
       thunkAPI.rejectWithValue(error);
       return;
     }
@@ -72,8 +71,7 @@ export const Rutines_Get = createAsyncThunk(
 
 export const EditUser = createAsyncThunk(
   "user/Edit",
-  async ({token,data}:any, thunkAPI) => {
-
+  async ({ token, data }: any, thunkAPI) => {
     try {
       let headersList = {
         Accept: "/",
@@ -85,18 +83,44 @@ export const EditUser = createAsyncThunk(
         url: `https://api-pf-xi.vercel.app/auth/changeinfo`,
         method: "PUT",
         headers: headersList,
-        data:data
+        data: data,
       };
 
       let response = await axios.request(reqOptions);
       const resp = response.data;
 
-      thunkAPI.dispatch(status(response.data));
+      thunkAPI.dispatch(Status(response.data));
+
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
+      thunkAPI.dispatch(Status(error.response.data));
       thunkAPI.rejectWithValue(error);
       return;
+    }
+  }
+);
+
+export const Detail = createAsyncThunk(
+  "user/detailEj",
+  async ({ token, id }: any, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+      };
+      let reqOptions = {
+        url: `https://api-pf-xi.vercel.app/auth/exercise?id=${id}`,
+        method: "GET",
+        headers: headersList,
+      };
+
+      let response = await axios.request(reqOptions);
+      const resp = response.data;
+      return resp;
+    } catch (error: any) {
+      thunkAPI.rejectWithValue(error.response.data);
+      return error.response.data;
     }
   }
 );
@@ -107,45 +131,44 @@ export const Exercises_Get = createAsyncThunk(
     try {
       const response = await axios.get("https://api-pf-xi.vercel.app/exercises");
       const resp = response.data;
-      thunkAPI.dispatch(Exercises(resp));
+      thunkAPI.fulfillWithValue(resp);
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
       thunkAPI.rejectWithValue(error);
       return;
     }
   }
 );
 
-export const User_Register_State = createAsyncThunk(
-  "user/sing_upUser",
+export const Activecuenta = createAsyncThunk(
+  "user/active",
   async (user: object, thunkAPI) => {
+    thunkAPI.dispatch(Status("none"));
+
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/register", user);
+      const response = await axios.put("https://api-pf-xi.vercel.app/account", user);
       const resp = response.data;
-      thunkAPI.dispatch(User(resp));
+      thunkAPI.dispatch(Status(resp));
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
-      thunkAPI.rejectWithValue(error);
+      thunkAPI.dispatch(Status(error.response.data));
       return;
     }
   }
 );
-
-export const User_Login_State = createAsyncThunk(
-  "user/login",
+export const ActivecuentaGoogle = createAsyncThunk(
+  "user/activeGoogle",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
+      const response = await axios.put(
+        "https://api-pf-xi.vercel.app/accountGoogle",
+        user
+      );
       const resp = response.data;
-      console.log(response);
-
-      thunkAPI.dispatch(User(resp));
+      thunkAPI.fulfillWithValue(resp);
       return resp;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
-      thunkAPI.rejectWithValue(error.response.data);
+      thunkAPI.dispatch(Status(error.response.data));
       return;
     }
   }
@@ -171,11 +194,9 @@ export const removeAccount = createAsyncThunk(
       };
 
       let response = await axios.request(reqOptions);
-      console.log(response.data);
+
       return response.data;
     } catch (error: any) {
-      console.log(error);
-
       return error;
     }
   }
@@ -190,7 +211,7 @@ export const getProfileInfo = createAsyncThunk(
         Authorization: "Bearer " + tokenUser,
         "Content-Type": "application/json",
       };
-      console.log(tokenUser);
+
       let userData = jwtDecode(tokenUser);
 
       let reqOptions = {
@@ -201,45 +222,12 @@ export const getProfileInfo = createAsyncThunk(
       };
 
       let response = await axios.request(reqOptions);
-      thunkAPI.dispatch(User(response.data));
-      console.log(response);
 
-      return;
+      thunkAPI.fulfillWithValue(response.data);
+
+      return response.data;
     } catch (error: any) {
-      console.log(error);
       return error;
-    }
-  }
-);
-
-
-
-export const ValidToken = createAsyncThunk(
-  "user/validToken",
-  async (tokenUser: string, thunkAPI) => {
-    try {
-      let headersList = {
-        Accept: "*/*",
-        Authorization: "Bearer " + tokenUser,
-        "Content-Type": "application/json",
-      };
-     
-
-      let reqOptions = {
-        url: "https://api-pf-xi.vercel.app/auth/ValidToken",
-        method: "GET",
-        headers: headersList,
-      };
-
-      let response = await axios.request(reqOptions);
-      thunkAPI.dispatch(statusToken("token valido"));
-      return;
-    } catch (error: any) {
-      if(error.response.data.message!=="jwt must be provided"){
-
-        thunkAPI.dispatch(statusToken("token invalido"));
-      }
-      
     }
   }
 );
@@ -262,27 +250,126 @@ export const infoUserRutina = createAsyncThunk(
       };
 
       let response = await axios.request(reqOptions);
-      thunkAPI.dispatch(status("success"));
+      thunkAPI.dispatch(Status("success"));
       return;
     } catch (error: any) {
-      thunkAPI.dispatch(status(error.response.data));
-      console.log(error);
+      thunkAPI.dispatch(Status(error.response.data));
+
       return error;
     }
   }
 );
 
-
-export const auth_Login_Google = createAsyncThunk(
-  "user/auth_google",
-  async (_, thunkAPI) => {
+export const userFeedback = createAsyncThunk(
+  "user/feedback",
+  async (data: userFeedback, thunkAPI) => {
     try {
-      const response = await axios.get("https://api-pf-xi.vercel.app/login/google");
-      const resp = response.data;
-      thunkAPI.dispatch(User(resp));
-      return resp;
-    } catch (error) {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + data.token,
+        "Content-Type": "application/json",
+      };
+
+      let reqOptions = {
+        url: "https://api-pf-xi.vercel.app/auth/userfeedback",
+        method: "PUT",
+        headers: headersList,
+        data: { comment: data.comment },
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.dispatch(Status("success"));
       return;
+    } catch (error: any) {
+      thunkAPI.dispatch(Status(error.response.data));
+      return error;
+    }
+  }
+);
+
+export const report = createAsyncThunk(
+  "user/report",
+  async (
+    data: { id: string | undefined; email: string; token: string },
+    thunkAPI
+  ) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + data.token,
+        "Content-Type": "application/json",
+      };
+
+      let reqOptions = {
+        url: "https://api-pf-xi.vercel.app/auth/report",
+        method: "PUT",
+        headers: headersList,
+        data: { email: data.email, id: data.id },
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.fulfillWithValue(response.data);
+
+      return response.data;
+    } catch (error: any) {
+      thunkAPI.rejectWithValue(error.response.data);
+      return error.response.data;
+    }
+  }
+);
+
+export const rewindExercise = createAsyncThunk(
+  "user/rewind",
+  async (data: any, thunkAPI) => {
+    try {
+      let headersList = {
+        Accept: "*/*",
+        Authorization: "Bearer " + data.token,
+        "Content-Type": "application/json",
+      };
+      let reqOptions = {
+        url: "https://api-pf-xi.vercel.app/auth/feedbackExercise",
+        method: "PUT",
+        headers: headersList,
+        data,
+      };
+
+      let response = await axios.request(reqOptions);
+      thunkAPI.dispatch(Status("success"));
+      return response.data;
+    } catch (error: any) {
+      thunkAPI.dispatch(Status(error.response.data));
+      return error.response.data;
+    }
+  }
+);
+
+export const User_Register_State = createAsyncThunk(
+  "user/sing_upUser",
+  async (user: object, thunkAPI) => {
+    try {
+      const response = await axios.post("https://api-pf-xi.vercel.app/register", user);
+      const resp = response.data;
+      thunkAPI.fulfillWithValue(resp);
+      return resp;
+    } catch (error: any) {
+      thunkAPI.rejectWithValue(error.response.data);
+      return error.response.data;
+    }
+  }
+);
+
+export const User_Login_State = createAsyncThunk(
+  "user/login",
+  async (user: object, thunkAPI) => {
+    try {
+      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
+      const resp = response.data;
+      thunkAPI.fulfillWithValue(resp);
+      return resp;
+    } catch (error: any) {
+      thunkAPI.rejectWithValue(error.response.data);
+      return error.response.data;
     }
   }
 );
@@ -290,16 +377,40 @@ export const auth_Login_Google = createAsyncThunk(
 export const authGoogle = createAsyncThunk(
   "user/auth_google",
   async (code: { code: String }, thunkAPI) => {
-    console.log(code);
     try {
       const response = await axios.post(
         "https://api-pf-xi.vercel.app/authGoogle",
         code
       );
-      return response.data;
-    } catch (error) {
-      return;
+      let resp = response.data;
+      thunkAPI.fulfillWithValue(resp);
+      return resp;
+    } catch (error: any) {
+      thunkAPI.dispatch(Status(error.response.data));
+      thunkAPI.rejectWithValue(error.response.data);
+      return error.response.data;
     }
+  }
+);
+
+export const feedbackFooter = createAsyncThunk(
+  "user/feedbackFooter",
+  async (body: any, thunkAPI) => {
+    let headersList = {
+      Accept: "*/*",
+      Authorization: "Bearer " + body.token,
+      "Content-Type": "application/json",
+    };
+
+    let reqOptions = {
+      url: "https://api-pf-xi.vercel.app/auth/ask",
+      method: "POST",
+      headers: headersList,
+      data: body,
+    };
+
+    let temp = await axios.request(reqOptions);
+    return temp;
   }
 );
 
@@ -308,62 +419,226 @@ export const StateSlice = createSlice({
   initialState,
 
   reducers: {
-    Rutines: (state, action: PayloadAction<[]>) => {
-      state.status = "none";
+    Rutines: (state, action: PayloadAction<any>) => {
       state.rutines = action.payload;
     },
 
     Exercises: (state, action: PayloadAction<[]>) => {
-      state.status = "none";
       state.exercises = action.payload;
     },
 
-
-    User: (state, action: PayloadAction<string>) => {
-      state.status = "none";
-      state.user = action.payload;
-    },
     sigendOut: (state, action: PayloadAction<null>) => {
-      console.log(action.payload);
-      state.status = "none";
-
       window.localStorage.removeItem("Login_userFit_Focus");
-
       state.user = action.payload;
     },
-    status: (state, action: PayloadAction<string>) => {
-      console.log(action.payload);
+    Estado: (state, action: PayloadAction<string>) => {
+      state.EstadoCuenta = action.payload;
+    },
+    Status: (state, action: PayloadAction<string | undefined>) => {
       state.status = action.payload;
     },
-    statusToken: (state, action: PayloadAction<string>) => {
-      console.log(action.payload);
-      state.statusToken = action.payload;
+    Response: (state) => {
+      state.response = "none";
+    },
+    DelateDetail: (state) => {
+      state.detailEjec = undefined;
+    },
+    Error: (state) => {
+      state.error = "";
     },
   },
   extraReducers: (builder) => {
     builder
+      //sing
+
       .addCase(User_Register_State.pending, (state) => {
-        state.status = null;
+        state.status = "log";
+      })
+      .addCase(User_Register_State.rejected, (state, action) => {
+        state.status = action.error.message;
+      })
+      .addCase(User_Register_State.fulfilled, (state, action) => {
+        state.status = "none";
+        if (typeof action.payload === "string") {
+          state.error = action.payload;
+        } else {
+          state.user = action.payload;
+        }
+      })
+      ///login
+
+      .addCase(User_Login_State.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(User_Login_State.rejected, (state, action) => {
+        state.status = action.error.message;
+      })
+      .addCase(User_Login_State.fulfilled, (state, action) => {
+        state.status = "none";
+        if (action.payload.length < 50) {
+          state.error = action.payload;
+        } else {
+          state.userToken = action.payload;
+        }
+      })
+      //Ejecicios
+
+      .addCase(Exercises_Get.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(Exercises_Get.rejected, (state) => {
+        state.status = "erro";
+      })
+      .addCase(Exercises_Get.fulfilled, (state, action) => {
+        state.status = "none";
+        state.exercises = action.payload;
+      })
+      // //getProfileInfo
+
+      .addCase(getProfileInfo.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(getProfileInfo.rejected, (state) => {
+        state.status = "erro";
+      })
+      .addCase(getProfileInfo.fulfilled, (state, action) => {
+        state.status = "none";
+        state.user = action.payload;
+      })
+      // //activeCuenta
+
+      .addCase(Activecuenta.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(Activecuenta.rejected, (state) => {
+        state.status = "erro";
+      })
+      .addCase(Activecuenta.fulfilled, (state, action) => {
+        state.status = "none";
+        state.EstadoCuenta = "none";
       })
 
-      .addCase(User_Login_State.pending, (state, action) => {
-        console.log("pending", action);
-        state.status = null;
+      .addCase(ActivecuentaGoogle.pending, (state) => {
+        state.status = "log";
       })
+      .addCase(ActivecuentaGoogle.rejected, (state) => {
+        state.status = "erro";
+      })
+      .addCase(ActivecuentaGoogle.fulfilled, (state, action) => {
+        state.status = "none";
+        state.EstadoCuenta = "none";
+      })
+      // //edit perfil
+
+      .addCase(EditUser.pending, (state, action) => {
+        state.status = "log";
+      })
+      .addCase(EditUser.rejected, (state, action) => {
+        state.status = "error";
+      })
+      .addCase(EditUser.fulfilled, (state, action) => {
+        state.status = "none";
+      })
+      // //GoogleAuth
 
       .addCase(authGoogle.pending, (state, action) => {
-        console.log("pending", action.payload);
+        state.status = "log";
+      })
+      .addCase(authGoogle.rejected, (state, action) => {
+        state.status = "error" + action.error.message;
       })
       .addCase(authGoogle.fulfilled, (state, action) => {
-        console.log("fulfilled", action.payload);
-        state.status = "load";
-        state.user = action.payload;
+        state.status = "none";
+        state.userToken = action.payload;
+      })
+
+      // //rutinas
+
+      .addCase(Rutines_Get.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(Rutines_Get.rejected, (state) => {
+        state.status = "error";
+      })
+      .addCase(Rutines_Get.fulfilled, (state, action) => {
+        state.status = "none";
+        state.rutines = action.payload;
+      })
+      ///ifo extrad del user
+      .addCase(infoUserRutina.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(infoUserRutina.rejected, (state) => {
+        state.status = "error";
+      })
+      .addCase(infoUserRutina.fulfilled, (state, action) => {
+        state.status = "none";
+        state.rutines = action.payload;
+      })
+      //rewind ejec
+      .addCase(rewindExercise.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(rewindExercise.rejected, (state) => {
+        state.status = "error";
+      })
+      .addCase(rewindExercise.fulfilled, (state, action) => {
+        state.status = "none";
+        console.log(action.payload);
+        if (action.payload !== "Feedback added") {
+          state.error = action.payload;
+        } else {
+          state.response = action.payload;
+        }
+      })
+      //detail ejercicio
+      .addCase(Detail.pending, (state, action) => {
+        state.status = "log";
+      })
+
+      .addCase(Detail.rejected, (state, action) => {
+        state.status = "error" + action.error.message;
+      })
+      .addCase(Detail.fulfilled, (state, action) => {
+        state.status = "none";
+
+        state.detailEjec = action.payload;
+      })
+
+      //repot
+      .addCase(report.pending, (state, action) => {
+        state.status = "log";
+      })
+      .addCase(report.rejected, (state, action) => {
+        state.status = "error" + action.error.message;
+      })
+      .addCase(report.fulfilled, (state, action) => {
+        state.status = "none";
+        state.response = action.payload;
+      })
+
+      .addCase(feedbackFooter.pending, (state) => {
+        state.status = "log";
+      })
+      .addCase(feedbackFooter.fulfilled, (state) => {
+        state.status = "none";
+      })
+      .addCase(feedbackFooter.rejected, (state) => {
+        state.status = "error";
       });
   },
 });
 
-export const { User, sigendOut, status, Rutines, Exercises,statusToken } =
-  StateSlice.actions;
+export const {
+  sigendOut,
+  Status,
+  Estado,
+  Rutines,
+  Response,
+  DelateDetail,
+  Exercises,
+  Error,
+} = StateSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

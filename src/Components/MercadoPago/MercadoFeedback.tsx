@@ -24,8 +24,7 @@ export default function Mercadoresponse() {
       }
     }
     if (id) {
-      dispatch(verify_payment({ token: userlogin, id: id }));
-      console.log(mercadoData);
+      dispatch(verify_payment({ token: userlogin.token, id: id }));
     }
   }, []);
   return (
