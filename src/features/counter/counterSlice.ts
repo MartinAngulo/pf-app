@@ -129,7 +129,9 @@ export const Exercises_Get = createAsyncThunk(
   "user/exercices",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("https://api-pf-xi.vercel.app/exercises");
+      const response = await axios.get(
+        "https://api-pf-xi.vercel.app/exercises"
+      );
       const resp = response.data;
       thunkAPI.fulfillWithValue(resp);
       return resp;
@@ -144,9 +146,12 @@ export const Activecuenta = createAsyncThunk(
   "user/active",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.put("https://api-pf-xi.vercel.app/account", user);
+      const response = await axios.put(
+        "https://api-pf-xi.vercel.app/account",
+        user
+      );
       const resp = response.data;
-  
+
       thunkAPI.fulfillWithValue(resp);
       return resp;
     } catch (error: any) {
@@ -249,10 +254,10 @@ export const infoUserRutina = createAsyncThunk(
       };
 
       let response = await axios.request(reqOptions);
-      thunkAPI.fulfillWithValue(response.data)
+      thunkAPI.fulfillWithValue(response.data);
       return response.data;
     } catch (error: any) {
-      thunkAPI.rejectWithValue(error.response.data)
+      thunkAPI.rejectWithValue(error.response.data);
       return error.response.data;
     }
   }
@@ -346,7 +351,10 @@ export const User_Register_State = createAsyncThunk(
   "user/sing_upUser",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/register", user);
+      const response = await axios.post(
+        "https://api-pf-xi.vercel.app/register",
+        user
+      );
       const resp = response.data;
       thunkAPI.fulfillWithValue(resp);
       return resp;
@@ -361,7 +369,10 @@ export const User_Login_State = createAsyncThunk(
   "user/login",
   async (user: object, thunkAPI) => {
     try {
-      const response = await axios.post("https://api-pf-xi.vercel.app/login", user);
+      const response = await axios.post(
+        "https://api-pf-xi.vercel.app/login",
+        user
+      );
       const resp = response.data;
       thunkAPI.fulfillWithValue(resp);
       return resp;
@@ -400,22 +411,21 @@ export const feedbackFooter = createAsyncThunk(
         Authorization: "Bearer " + body.token,
         "Content-Type": "application/json",
       };
-  
+
       let reqOptions = {
         url: "https://api-pf-xi.vercel.app/auth/ask",
         method: "POST",
         headers: headersList,
         data: body,
       };
-  
+
       let temp = await axios.request(reqOptions);
-      thunkAPI.fulfillWithValue(temp.data)
+      thunkAPI.fulfillWithValue(temp.data);
       return temp.data;
-    } catch (error:any) {
-      thunkAPI.fulfillWithValue(error.response.data)
+    } catch (error: any) {
+      thunkAPI.fulfillWithValue(error.response.data);
       return error.response.data;
     }
-   
   }
 );
 
@@ -522,7 +532,7 @@ export const StateSlice = createSlice({
       })
       .addCase(Activecuenta.fulfilled, (state, action) => {
         state.status = "none";
-        state.response=action.payload;
+        state.response = action.payload;
         state.EstadoCuenta = "none";
       })
 
@@ -557,12 +567,10 @@ export const StateSlice = createSlice({
       })
       .addCase(authGoogle.fulfilled, (state, action) => {
         state.status = "none";
-        if(action.payload=="User google desactivated"){
+        if (action.payload == "User google desactivated") {
           state.error = action.payload;
-
-        }else{
+        } else {
           state.userToken = action.payload;
-
         }
       })
 
@@ -633,11 +641,11 @@ export const StateSlice = createSlice({
       .addCase(feedbackFooter.pending, (state) => {
         state.status = "log";
       })
-      .addCase(feedbackFooter.fulfilled, (state,action) => {
+      .addCase(feedbackFooter.fulfilled, (state, action) => {
         state.status = "none";
-        if(action.payload=="Question sent succesfully"){
+        if (action.payload == "Question sent succesfully") {
           state.response = action.payload;
-        }else{
+        } else {
           state.error = action.payload;
         }
       })

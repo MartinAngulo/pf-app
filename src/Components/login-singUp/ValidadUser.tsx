@@ -10,14 +10,14 @@ import {
 } from "../../features/counter/counterSlice";
 interface Propos {
   loading_icon: string;
-  icon: string
+  icon: string;
 }
 
 const ValidadUser: React.FC<Propos> = ({ loading_icon, icon }) => {
   let user = useAppSelector(selectUser);
 
   const dispatch = useAppDispatch();
-  const [loagi, setloagin] = useState(false)
+  const [loagi, setloagin] = useState(false);
   const [Form_data, Set_form_data] = useState({
     email: "",
   });
@@ -32,31 +32,42 @@ const ValidadUser: React.FC<Propos> = ({ loading_icon, icon }) => {
   //////////enviar de datos  por medio de los input//////////////////////////////////////////
   async function handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
-    setloagin(true)
-    const response = await axios.post("https://api-pf-xi.vercel.app/newpassword", Form_data);
+    setloagin(true);
+    const response = await axios.post(
+      "https://api-pf-xi.vercel.app/newpassword",
+      Form_data
+    );
     const resp = response.data;
-    SetResp(resp)
+    SetResp(resp);
     if (resp) {
-      setloagin(false)
-
+      setloagin(false);
     }
   }
 
   return (
-    <div className='h-full w-full flex justify-center content-center'>
+    <div className="h-full w-full flex justify-center content-center">
       {/* component */}
       <div className="py-6 flex-1 content-center justify-center ">
         <div className="flex bg-white shadow-2xl overflow-hidden mx-auto sm:mt-0  max-w-sm h-auto lg:max-w-[68%]">
           <div
             className="hidden lg:block lg:w-[50%] bg-no-repeat bg-center bg-[length:350px_200px]"
             style={{
-              backgroundImage:
-                `url(${icon})`,
-              backgroundSize: "cover"
-            }} >
-            <h1 style={{ color: "white", fontSize: "2rem", width: "20vw", marginLeft: "7vw", marginTop: "30vh" }}>“La clave para iniciar algo
-              es dejar de hablar y
-              ponerse a hacerlo”</h1>
+              backgroundImage: `url(${icon})`,
+              backgroundSize: "cover",
+            }}
+          >
+            <h1
+              style={{
+                color: "white",
+                fontSize: "2rem",
+                width: "20vw",
+                marginLeft: "7vw",
+                marginTop: "30vh",
+              }}
+            >
+              “La clave para iniciar algo es dejar de hablar y ponerse a
+              hacerlo”
+            </h1>
           </div>
           <div className="w-full p-8 lg:w-1/2">
             <h2 className="text-2xl font-semibold text-gray-700 text-center">
@@ -78,10 +89,14 @@ const ValidadUser: React.FC<Propos> = ({ loading_icon, icon }) => {
               />
             </div>
             <div className="absolute w-[30%] m-2 text-gray-500">
-              <p>{Respusta && "verifique su correo eletronico, si aun no le llega el link para cambiar su contraseña , recomiendo que mires en la caja de span"}</p>
+              <p>
+                {Respusta &&
+                  "verifique su correo eletronico, si aun no le llega el link para cambiar su contraseña , recomiendo que mires en la caja de span"}
+              </p>
             </div>
             <div className="mt-[150px]">
-              <button className="bg-gray-700 text-white font-bold py-2 px-4 w-full :bg-gray-600"
+              <button
+                className="bg-gray-700 text-white font-bold py-2 px-4 w-full :bg-gray-600"
                 onClick={handleSubmit}
               >
                 {!loagi ? (

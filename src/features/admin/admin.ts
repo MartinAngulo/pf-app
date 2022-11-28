@@ -11,8 +11,8 @@ export interface State {
   delete_exer: string;
   delete_user: string;
   change_exer: string;
-  question_status:string,
-  questions:Array<any>,
+  question_status: string;
+  questions: Array<any>;
 }
 export interface data {
   name: string;
@@ -33,8 +33,8 @@ const initialState: State = {
   delete_exer: "default",
   delete_user: "default",
   change_exer: "default",
-  question_status:'default',
-  questions:[],
+  question_status: "default",
+  questions: [],
 };
 
 export interface comments {
@@ -53,11 +53,14 @@ export const get_users = createAsyncThunk(
         token = userlogin.token;
       }
     }
-    const response = await axios.get("https://api-pf-xi.vercel.app/admin/allusers", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      "https://api-pf-xi.vercel.app/admin/allusers",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   }
 );
@@ -73,11 +76,14 @@ export const get_questions = createAsyncThunk(
         token = userlogin.token;
       }
     }
-    const response = await axios.get("https://api-pf-xi.vercel.app/admin/questions", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      "https://api-pf-xi.vercel.app/admin/questions",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   }
 );
@@ -316,7 +322,7 @@ export const AdminSlice = createSlice({
       state.change_exer = "default";
     },
     reset_status_res(state) {
-      state.question_status = 'default';
+      state.question_status = "default";
     },
   },
 
@@ -374,7 +380,7 @@ export const AdminSlice = createSlice({
       })
       .addCase(get_questions.fulfilled, (state, action) => {
         state.question_status = "load";
-        state.questions=action.payload;
+        state.questions = action.payload;
       })
       .addCase(get_questions.rejected, (state, action) => {
         state.question_status = "rejected";
@@ -384,7 +390,7 @@ export const AdminSlice = createSlice({
       })
       .addCase(add_response.rejected, (state, action) => {
         state.question_status = "rejected";
-      })
+      });
   },
 });
 

@@ -14,16 +14,16 @@ interface ejerciciosData {
   description: string;
 }
 
-export default function CardEjetcicio (descripcionEjersicio:ejerciciosData ){
-  let token=useToken()
+export default function CardEjetcicio(descripcionEjersicio: ejerciciosData) {
+  let token = useToken();
   const [addFav, SetAddfav] = useState<boolean | string>("default");
-  const { user,status } = useAppSelector(selectUser);
-  
+  const { user, status } = useAppSelector(selectUser);
+
   function AddFavorite() {
     const favExisited = user?.fav.find(
       (x: any) => x.id === descripcionEjersicio?._id
     );
-    if (favExisited || addFav === "Exercise added to fav"){
+    if (favExisited || addFav === "Exercise added to fav") {
       Swal.fire({
         title: `Tu Ejercicio ya esta en tus Favoritos!❤️`,
         icon: "success",
@@ -83,19 +83,21 @@ export default function CardEjetcicio (descripcionEjersicio:ejerciciosData ){
     }
   }, [addFav]);
 
-
-  return(
+  return (
     <>
-      <div
-        className={`max-w-full flex flex-col bg-white  shadow-md   `}
-         >
-        <div className={`min-h-[150px] w-full flex overflow-hidden }`}>
-          <img className=" w-[50%]" src={descripcionEjersicio?.video} />
+      <div className={`max-w-full flex flex-col bg-white  shadow-md   `}>
+        <div
+          className={`min-h-[150px] w-full flex md:flex-nowrap flex-wrap overflow-hidden }`}
+        >
+          <img
+            className="w-full md:w-[50%] "
+            src={descripcionEjersicio?.video}
+          />
           <div className="p-5">
             <h5 className=" text-2xl font-bold tracking-tight text-gray-900">
               {descripcionEjersicio?.name}
             </h5>
-            <p className="">{descripcionEjersicio?.description}</p>
+            <p className="font-normal">{descripcionEjersicio?.description}</p>
 
             <div className="py-5">
               <span
@@ -127,7 +129,6 @@ export default function CardEjetcicio (descripcionEjersicio:ejerciciosData ){
                 {
                   <button
                     onClick={() => AddFavorite()}
-
                     className="inline-flex items-center py-2 px-3 outline-none text-sm font-medium text-center text-white bg-[#6c63ff] duration-150  hover:bg-blue-800"
                   >
                     Agregar a favoritos❤️
@@ -136,9 +137,8 @@ export default function CardEjetcicio (descripcionEjersicio:ejerciciosData ){
               </div>
             </div>
           </div>
-          </div>
         </div>
+      </div>
     </>
-  )
-
+  );
 }

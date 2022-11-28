@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-
 //Hooks para el manteniminedo de seccion del usuario
 
 export function useSesion() {
@@ -24,18 +23,18 @@ export function useSesion() {
     if (userJSON) {
       if (userJSON.length > 3) {
         let userlogin = JSON.parse(userJSON);
-        let respuesta = funcion.caducaToken(userlogin.time)
-        if(!respuesta){
+        let respuesta = funcion.caducaToken(userlogin.time);
+        if (!respuesta) {
           userlogin = jwtDecode(userlogin.token);
           setuser(userlogin);
-        }else{
-          dispatch(sigendOut(null))
-          Navegation("/home")
+        } else {
+          dispatch(sigendOut(null));
+          Navegation("/home");
           window.location.reload();
         }
       }
     }
-  },[userStado]);
+  }, [userStado]);
   return user;
 }
 
@@ -75,6 +74,4 @@ export async function opiniom(token: string, feedback: object) {
   };
 
   let response = await axios.request(reqOptions);
-
 }
-
